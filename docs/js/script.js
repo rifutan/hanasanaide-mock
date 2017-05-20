@@ -9837,24 +9837,19 @@ var TouchCheck = function () {
 
     _classCallCheck(this, TouchCheck);
 
-    this.status = opts.status;
     this.pointX = opts.evt.pageX;
     this.pointY = opts.evt.pageY;
+    this.status = "on";
     this.button = document.getElementsByClassName("js-button")[0];
-    if (this.status == "on") {
-      this.pointerMove({ pointX: this.pointX, pointY: this.pointY });
-      this.push();
-    } else if (this.status == "off") {
-      this.pull();
-    }
+    this.pointerPosition({ pointX: this.pointX, pointY: this.pointY });
+    this.touchStart();
   }
 
   _createClass(TouchCheck, [{
-    key: "push",
-    value: function push() {
+    key: "touchStart",
+    value: function touchStart() {
       var _this = this;
 
-      window.addEventListener("mousemove", this.pointerMove(), false);
       this.button.classList.add("is-active");
       new Promise(function (resolve) {
         setTimeout(function () {
@@ -9863,12 +9858,12 @@ var TouchCheck = function () {
           }
         }, 5000);
       }).then(function () {
-        _this.clear();
+        _this.gameClear();
       });
     }
   }, {
-    key: "pull",
-    value: function pull() {
+    key: "touchEnd",
+    value: function touchEnd() {
       if (!this.button.classList.contains('is-clear')) {
         alert("離した！");
       }
@@ -9877,14 +9872,13 @@ var TouchCheck = function () {
       this.button.classList.remove("is-active");
     }
   }, {
-    key: "clear",
-    value: function clear() {
+    key: "gameClear",
+    value: function gameClear() {
       this.button.classList.add("is-clear");
-      this.status == "clear";
     }
   }, {
-    key: "pointerMove",
-    value: function pointerMove() {
+    key: "pointerPosition",
+    value: function pointerPosition() {
       var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       this.pointX = opts.pointX;
@@ -9913,39 +9907,30 @@ var _touch2 = _interopRequireDefault(_touch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var status = void 0;
 var touch = void 0;
 var start = void 0;
 var move = void 0;
 var end = void 0;
 
 if (window.innerWidth < 800) {
-  start = "touchstart";
-  move = "touchmove";
-  end = "touchend";
+	start = "touchstart";
+	move = "touchmove";
+	end = "touchend";
 } else {
-  start = "mousedown";
-  move = "mousemove";
-  end = "mouseup";
+	start = "mousedown";
+	move = "mousemove";
+	end = "mouseup";
 }
 
 window.addEventListener(start, function (evt) {
-  status = "on";
-  console.log('押した');
-  touch = new _touch2.default({ status: status, evt: evt });
+	touch = new _touch2.default({ evt: evt });
+	window.addEventListener(move, function (evt) {
+		touch.pointerPosition({ pointX: evt.pageX, pointY: evt.pageY });
+	}, false);
 }, false);
 
 window.addEventListener(end, function () {
-  status = "off";
-  console.log('離した');
-  touch.pull();
-}, false);
-
-window.addEventListener(move, function (evt) {
-  if (status == "on") {
-    console.log('移動した');
-    touch.pointerMove({ pointX: evt.pageX, pointY: evt.pageY });
-  }
+	touch.touchEnd();
 }, false);
 
 },{"./lib/touch":2,"jquery":1}]},{},[3]);

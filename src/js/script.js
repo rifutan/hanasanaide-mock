@@ -1,7 +1,6 @@
 import $ from 'jquery';
 import TouchCheck from './lib/touch';
 
-let status;
 let touch;
 let start;
 let move;
@@ -18,20 +17,12 @@ if(window.innerWidth < 800){
 }
 
 window.addEventListener(start, (evt) => {
-  status = "on";
-  console.log('押した');
-  touch = new TouchCheck({status: status, evt: evt});
+  touch = new TouchCheck({evt: evt});
+	window.addEventListener(move, (evt) => {
+		touch.pointerPosition({pointX: evt.pageX, pointY: evt.pageY});
+	}, false);
 }, false);
 
 window.addEventListener(end, () => {
-  status = "off";
-  console.log('離した');
-  touch.pull();
-}, false);
-
-window.addEventListener(move, (evt) => {
-  if (status == "on") {
-    console.log('移動した');
-    touch.pointerMove({pointX: evt.pageX, pointY: evt.pageY});
-  }
+  touch.touchEnd();
 }, false);

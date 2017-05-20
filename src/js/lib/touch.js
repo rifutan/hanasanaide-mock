@@ -2,19 +2,14 @@ import $ from 'jquery';
 
 export default class TouchCheck {
   constructor (opts = {}) {
-    this.status = opts.status;
     this.pointX = opts.evt.pageX;
     this.pointY = opts.evt.pageY;
+    this.status = "on";
     this.button = document.getElementsByClassName("js-button")[0];
-    if (this.status == "on") {
-      this.pointerMove({pointX: this.pointX, pointY: this.pointY});
-      this.push();
-    } else if (this.status == "off") {
-      this.pull();
-    }
+    this.pointerPosition({pointX: this.pointX, pointY: this.pointY});
+    this.touchStart();
   }
-  push () {
-    window.addEventListener("mousemove", this.pointerMove(), false);
+  touchStart () {
     this.button.classList.add("is-active");
     new Promise((resolve) => {
       setTimeout(() => {
@@ -24,10 +19,10 @@ export default class TouchCheck {
       }, 5000);
     })
     .then(() => {
-      this.clear();
+      this.gameClear();
     });
   }
-  pull () {
+  touchEnd () {
     if (!this.button.classList.contains('is-clear')) {
       alert("離した！");
     }
@@ -35,11 +30,10 @@ export default class TouchCheck {
     this.button.classList.remove("is-clear");
     this.button.classList.remove("is-active");
   }
-  clear () {
+  gameClear () {
     this.button.classList.add("is-clear");
-    this.status == "clear";
   }
-  pointerMove (opts = {}) {
+  pointerPosition (opts = {}) {
     this.pointX = opts.pointX;
     this.pointY = opts.pointY;
     this.button.style.top = (this.pointY - 100) + "px";
